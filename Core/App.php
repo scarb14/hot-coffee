@@ -4,29 +4,47 @@ namespace Core;
 
 class App
 {
+    public const DIR = 'App';
+
     public function route(): void
     {
-        var_dump(11);
-        exit;
-        $url = $_SERVER['REQUEST_URI'];
-        var_dump($url);
-        exit;
+        $uri = ltrim($_SERVER['REQUEST_URI'], '/ ');
+        $uri = explode('?', $uri);
+        $uri = $uri[0] ?? '';
+        $parts = explode('/', $uri);
 
-        $namespace = 'Controllers\Backend\Admin_forms';
-        $className = FNC::camelCase($module) . 'Controller';
-        $fullClassName = $namespace . "\\" . $className;
-
-        if (class_exists($fullClassName)) {
-            $class = new $fullClassName();
-            if (method_exists($class, $view)) {
-                $action = $view;
-            } else {
-                $action = 'index';
-            }
-            $class->$action();
+        $space = $parts[0] ?? '';
+        $nameController = $parts[1] ?? '';
+        if (!$space || !$nameController) {
+            $this->page404();
         }
 
-        var_dump(1);
+        $paths = [
+            self::DIR,
+            $this->camelCase($space),
+            'Controller',
+            $this->camelCase($nameController) . 'Controller',
+        ];
+        $fullClassName = join('\\', $paths);
+        if (!class_exists($fullClassName)) {
+            $this->page404();
+        }
+        $class = new $fullClassName();
+        $action = $parts[2] ?? 'index';
+        if (!method_exists($class, $action)) {
+            $this->page404();
+        }
+        $class->$action();
+    }
+
+    public function page404(): void
+    {
+        echo 'Page not found';
         exit;
+    }
+
+    private function camelCase(string $string): string
+    {
+        return str_replace('_', '', ucwords($string, '_'));
     }
 }
