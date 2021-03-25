@@ -1,4 +1,8 @@
 <?php
 
-var_dump(1);
-exit;
+require_once('vendor/autoload.php');
+
+use Core\App;
+
+$app = new App();
+$app->route();
