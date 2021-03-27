@@ -18,7 +18,6 @@ class App
         if (!$space || !$nameController) {
             $this->page404();
         }
-
         $paths = [
             self::DIR,
             $this->camelCase($space),
@@ -39,7 +38,8 @@ class App
 
     public function page404(): void
     {
-        echo 'Page not found';
+        echo 'Page not found' . '<br>';
+        echo '<a href="/coffee_house/hot_coffee/page">"HotCoffee" coffee house page</a>';
         exit;
     }
 
