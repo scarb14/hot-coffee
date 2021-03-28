@@ -3,11 +3,14 @@
 namespace App\CoffeeHouse\Controller;
 
 use App\Coffeehouse\Model\Country;
+use App\Coffeehouse\Service\CalculatorAmountCoffee;
 use App\Coffeehouse\Service\GetterCoffee;
 use App\Coffeehouse\Service\GetterCoffeeIngredient;
+use Core\CommonController;
 use Core\DB\Model;
 
-class HotCoffeeController {
+class HotCoffeeController extends CommonController
+{
 
     public function index(): void
     {
@@ -23,38 +26,41 @@ class HotCoffeeController {
         $viewData['coffee'] = $getterCoffee->get();
         $viewData['countries'] = $countryModel->getAll();
         $viewData['default_country_name'] = 'Испания';
+        $viewData['title'] = 'Заказать кофе онлайн';
         $viewData['ingredients'] = $getterCoffeeIngredient->get();
     }
 
-    private function getIngredients(): array
+    public function make_coffee(): void
     {
-        return [
-            [
-                'id'            => 1,
-                'name'          => 'Молоко',
-                'short_name'    => 'moloko',
-            ],
-            [
-                'id'            => 2,
-                'name'          => 'Сироп',
-                'short_name'    => 'sirop',
-            ],
+        $countryId = (int) $_POST['county_id'] ?? 0;
+        $coffeeId = (int) $_POST['coffee_id'] ?? 0;
+        $ingredientIds = $_POST['ingredient_ids'] ?? [];
+
+        $model = new Model();
+        $getterCoffee = new GetterCoffee($model);
+        $coffee = $getterCoffee->getAtIdAndCountryId($coffeeId, $countryId);
+        if (!$coffee) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Invalid params',
+            ]);
+        }
+        $getterCoffeeIngredient = new GetterCoffeeIngredient($model);
+        $ingredients = $getterCoffeeIngredient->getAtParams($ingredientIds, $countryId, $coffeeId);
+        $data = [
+            'success' => true,
+            'message' => $this->getMessageForMakeCoffee($coffee, $ingredients),
         ];
+        $this->responseJson($data);
     }
 
-    private function getAdditions(): array
+    private function getMessageForMakeCoffee(array $coffee, array $ingredients): string
     {
-        return [
-            [
-                'id'            => 1,
-                'name'          => 'Шоколад',
-                'short_name'    => 'moloko',
-            ],
-            [
-                'id'            => 2,
-                'name'          => 'Круассан',
-                'short_name'    => 'kryossan',
-            ],
-        ];
+        $msg = 'Ваш заказ\n';
+        $msg .= 'Кофе: ' . $coffee['name'] . '\n';
+        $calculatorAmountCoffee = new CalculatorAmountCoffee();
+        $totalAmount = $calculatorAmountCoffee->getTotalAmount($coffee, $ingredients);
+        $msq .= 'Итого: ' . $totalAmount .  '\n';
+        return $msg;
     }
 }

@@ -53,6 +53,7 @@ class App
         $view = 'App/' . $paths[1] . '/View/' . $nameController . '/' . $viewFile;
         $this->smarty->setTemplateDir(dirname( __FILE__ ) . '/View');
 
+        $this->smarty->assign('title', $viewData['title'] ?? 'Заказать кофе');
         $this->smarty->assign('view', $view);
         $this->smarty->assign('viewData', $viewData);
         $this->smarty->display('view.tpl');

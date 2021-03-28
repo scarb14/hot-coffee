@@ -15,19 +15,32 @@ class GetterCoffee
         $this->model = $model;
     }
 
-    public function get(): array
+    public function getSelectSql(): string
     {
         $select = [
             'co.id',
             'co.name',
             'cp.amount',
             'c.id',
+            'cp.country_id',
             'c.name as country_name',
         ];
-        $sql = 'SELECT ' . join(',', $select) . ' FROM coffee co 
+        return 'SELECT ' . join(',', $select) . ' FROM coffee co 
         INNER JOIN coffee_price cp ON co.id = cp.coffee_id
-        INNER JOIN country c ON c.id = cp.country_id
-        ';
+        INNER JOIN country c ON c.id = cp.country_id';
+    }
+
+    public function get(): array
+    {
+        $sql = $this->getSelectSql();
         return $this->model->select($sql);
+    }
+
+    public function getAtIdAndCountryId(int $id, int $countryId): array
+    {
+        $sql = $this->getSelectSql();
+        $sql .= ' WHERE c.id = ' . $id;
+        $sql .= ' AND cp.country_id = ' . $countryId;
+        return current($this->model->select($sql));
     }
 }
