@@ -2,6 +2,7 @@
 
 namespace App\CoffeeHouse\Controller;
 
+use App\Coffeehouse\Model\CoffeeTax;
 use App\Coffeehouse\Model\Country;
 use App\Coffeehouse\Service\CalculatorAmountCoffee;
 use App\Coffeehouse\Service\GetterCoffee;
@@ -47,20 +48,26 @@ class HotCoffeeController extends CommonController
         }
         $getterCoffeeIngredient = new GetterCoffeeIngredient($model);
         $ingredients = $getterCoffeeIngredient->getAtParams($ingredientIds, $countryId, $coffeeId);
+        $coffeeTax = new CoffeeTax();
+        $tax = $coffeeTax->getPercentAtCountryId($countryId);
         $data = [
             'success' => true,
-            'message' => $this->getMessageForMakeCoffee($coffee, $ingredients),
+            'message' => $this->getMessageForMakeCoffee($coffee, $ingredients, $tax),
         ];
         $this->responseJson($data);
     }
 
-    private function getMessageForMakeCoffee(array $coffee, array $ingredients): string
+    private function getMessageForMakeCoffee(array $coffee, array $ingredients, float $tax): string
     {
-        $msg = 'Ваш заказ\n';
-        $msg .= 'Кофе: ' . $coffee['name'] . '\n';
+        $msg = "Ваш заказ:\n";
+        $msg .= $coffee['name'] . ': (' . $coffee['amount'] . " €)\n";
+        foreach ($ingredients as $item) {
+            $msg .= $item['name'] . ': (' . $item['amount'] . " €)\n";
+        }
+        $msg .= 'Налог: ' . $tax . '%' . "\n";
         $calculatorAmountCoffee = new CalculatorAmountCoffee();
-        $totalAmount = $calculatorAmountCoffee->getTotalAmount($coffee, $ingredients);
-        $msq .= 'Итого: ' . $totalAmount .  '\n';
+        $totalAmount = $calculatorAmountCoffee->getTotalAmount($coffee, $ingredients, $tax);
+        $msg .= 'Итого: ' . $totalAmount .  " €\n";
         return $msg;
     }
 }

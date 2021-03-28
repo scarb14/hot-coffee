@@ -44,6 +44,9 @@ class GetterCoffeeIngredient
 
     public function getAtParams(array $ids, int $countryId, int $coffeeId): array
     {
+        if (!$ids) {
+            return [];
+        }
         $sql = $this->getSelectSql();
         $sql .= ' WHERE ci.id IN (' . join(',', $ids) . ')';
         $sql .= ' AND cip.country_id = ' . $countryId;

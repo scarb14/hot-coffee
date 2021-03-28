@@ -22,6 +22,15 @@ class Model
         return $this->select($sql);
     }
 
+    public function fetchFirstField(string $sql): string
+    {
+        $result = $this->select($sql);
+        if (!isset($result[0])) {
+            return '';
+        }
+        return (string) current($result[0]);
+    }
+
     public function query(string $sql): \mysqli_result
     {
         return $this->mysqli->query($sql);
