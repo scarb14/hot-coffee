@@ -12,7 +12,7 @@ class CoffeeTax extends Model
 
     public function getPercentAtCountryId(int $countyId): float
     {
-        $sql = 'SELECT percent FROM ' . self::TABLE_NAME . ' WHERE country_id = ' . $countyId;
+        $sql = 'SELECT `percent` FROM ' . self::TABLE_NAME . ' WHERE country_id = ' . $countyId;
         return $this->fetchFirstField($sql);
     }
 }
