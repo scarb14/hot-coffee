@@ -36,10 +36,11 @@ class GetterCoffee
         return $this->model->select($sql);
     }
 
-    public function getAtIdAndCountryId(int $id, int $countryId): array
+    public function getAtIdAndCountryId(int $coffeeId, int $countryId): array
     {
+
         $sql = $this->getSelectSql();
-        $sql .= ' WHERE c.id = ' . $id;
+        $sql .= ' WHERE cp.coffee_id = ' . $coffeeId;
         $sql .= ' AND cp.country_id = ' . $countryId;
         return current($this->model->select($sql));
     }
