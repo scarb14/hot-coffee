@@ -9,9 +9,17 @@ class HotCoffeeController {
 
     }
 
-    public function page(): void
+    public function page(array &$viewData): void
     {
-        var_dump('Success');
-        exit;
+        $viewData['countries'] = [
+            [
+                'id' => 1,
+                'name' => 'Испания',
+            ],
+            [
+                'id' => 1,
+                'name' => 'Италия',
+            ],
+        ];
     }
 }

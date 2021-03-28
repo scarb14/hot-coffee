@@ -6,6 +6,14 @@ class App
 {
     public const DIR = 'App';
 
+    /** @var Smarty */
+    private $smarty;
+
+    public function __construct(Smarty $smarty)
+    {
+        $this->smarty = $smarty;
+    }
+
     public function route(): void
     {
         $uri = ltrim($_SERVER['REQUEST_URI'], '/ ');
@@ -18,11 +26,12 @@ class App
         if (!$space || !$nameController) {
             $this->page404();
         }
+        $nameController = $this->camelCase($nameController);
         $paths = [
             self::DIR,
             $this->camelCase($space),
             'Controller',
-            $this->camelCase($nameController) . 'Controller',
+            $nameController . 'Controller',
         ];
         $fullClassName = join('\\', $paths);
         if (!class_exists($fullClassName)) {
@@ -33,7 +42,20 @@ class App
         if (!method_exists($class, $action)) {
             $this->page404();
         }
-        $class->$action();
+        $viewData = [];
+        $class->$action($viewData);
+        $this->view($viewData, $action, $nameController, $paths);
+    }
+
+    public function view(array $viewData, string $action, string $nameController, array $paths): void
+    {
+        $viewFile = $action . '.tpl';
+        $view = 'App/' . $paths[1] . '/View/' . $nameController . '/' . $viewFile;
+        $this->smarty->setTemplateDir(dirname( __FILE__ ) . '/View');
+
+        $this->smarty->assign('view', $view);
+        $this->smarty->assign('viewData', $viewData);
+        $this->smarty->display('view.tpl');
     }
 
     public function page404(): void
