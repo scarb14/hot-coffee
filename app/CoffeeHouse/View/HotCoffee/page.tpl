@@ -41,8 +41,8 @@
 				data-coffee-id="{$item.coffee_id}"
 				class="js-coffee-element{if $item['country_name'] !== $viewData['default_country_name']} hidden{/if}"
 		>
-			<input type="checkbox" value="{$item.id}" name="{$item.short_name}" id="{$item.short_name}">
-			<label for="{$item.short_name}">
+			<input type="checkbox" value="{$item.id}" name="{$item.short_name}" id="{$item.short_name}_{$item.country_id}_{$item.coffee_id}">
+			<label for="{$item.short_name}_{$item.country_id}_{$item.coffee_id}">
 				{$item.name} ({$item.amount} €)
 			</label>
 		</div>
@@ -56,8 +56,8 @@
 				data-coffee-id="{$item.coffee_id}"
 				class="js-coffee-element{if $item['country_name'] !== $viewData['default_country_name']} hidden{/if}"
 		>
-			<input type="checkbox" value="{$item.id}" name="{$item.short_name}" id="{$item.short_name}">
-			<label for="{$item.short_name}">
+			<input type="checkbox" value="{$item.id}" name="{$item.short_name}" id="{$item.short_name}_{$item.country_id}_{$item.coffee_id}">
+			<label for="{$item.short_name}_{$item.country_id}_{$item.coffee_id}">
 				{$item.name} ({$item.amount} €)
 			</label>
 		</div>
