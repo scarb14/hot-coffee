@@ -3,6 +3,8 @@
 namespace App\CoffeeHouse\Controller;
 
 use App\Coffeehouse\Model\Country;
+use App\Coffeehouse\Service\GetterCoffee;
+use App\Coffeehouse\Service\GetterCoffeeIngredient;
 use Core\DB\Model;
 
 class HotCoffeeController {
@@ -15,9 +17,13 @@ class HotCoffeeController {
     public function page(array &$viewData): void
     {
         $countryModel = new Country();
+        $model = new Model();
+        $getterCoffeeIngredient = new GetterCoffeeIngredient($model);
+        $getterCoffee = new GetterCoffee($model);
+        $viewData['coffee'] = $getterCoffee->get();
         $viewData['countries'] = $countryModel->getAll();
-        $viewData['ingredients'] = $this->getIngredients();
-        $viewData['additions'] = $this->getAdditions();
+        $viewData['default_country_name'] = 'Испания';
+        $viewData['ingredients'] = $getterCoffeeIngredient->get();
     }
 
     private function getIngredients(): array
